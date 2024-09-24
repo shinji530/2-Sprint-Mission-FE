@@ -194,7 +194,7 @@ input {
     position: absolute;
     justify-content: center;
     align-items: center;
-    transform: translateY(-130%) translateX(155%);
+    transform: translateY(-180%) translateX(-61%);
   }
 
   .sort-menu {

@@ -1,35 +1,36 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import "../css/RegisterPage.css";
-import { initialProductData, validationCheck, submitProductData } from "../utils/Register";
+import { initialProductData, submitProductData } from "../utils/Register";
 import X from "../assets/img/ic_X.png";
+import { useValidation } from "../hook/useValidation";
 
 export default function RegisterPage() {
   const [productData, setProductData] = useState(initialProductData);
-  const [errors, setErrors] = useState({});
+  // const [errors, setErrors] = useState({});
   const [tagInput, setTagInput] = useState("");
   const navigate = useNavigate();
+  const { errors, validateField, validationCheck } = useValidation();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    const updatedProductData = {
+    setProductData({
       ...productData,
       [name]: value,
-    };
-    setProductData(updatedProductData);
+    });
+  };
 
-    setErrors({});
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+    validateField(name, value, productData);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setErrors({});
     const validationErrors = validationCheck(productData);
     console.log("Validation Errors:", validationErrors); 
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
-      return;
-    }
+    if (Object.keys(validationErrors).length > 0) return;
+
     try {
         const response = await submitProductData(productData);
         alert("상품이 등록되었습니다.");
@@ -53,15 +54,21 @@ export default function RegisterPage() {
         ...prevData,
         tags: [...(prevData.tags || []), tagInput.trim()]
       }));
+      validateField('tags', tagInput.trim(), {
+        ...productData, 
+        tags: [...(productData.tags || []), tagInput.trim()] 
+      });
       setTagInput('');
     }
   };
 
-  const handleTagRemove = (tag) => {
+  const handleTagRemove = (index) => {
+    const updatedTags = productData.tags.filter((_, i) => i !== index);
     setProductData((prevData) => ({
       ...prevData,
-      tags: (prevData.tags || []).filter((_, t) => t !== tag),
+      tags: updatedTags,
     }));
+    validateField("tags", "", { ...productData, tags: updatedTags });
   };
 
   return (
@@ -71,9 +78,11 @@ export default function RegisterPage() {
         <button
           className="registration-top-button"
           onClick={handleSubmit}
-          disabled={Object.keys(errors).length > 0}
-        >
-          등록
+          disabled={Object.keys(errors).length > 0 || 
+            !productData.name || 
+            !productData.description || 
+            !productData.price}>
+        등록
         </button>
       </div>
       <div className="register-form">
@@ -88,6 +97,7 @@ export default function RegisterPage() {
             id="product-name"
             value={productData.name}
             onChange={handleInputChange}
+            onBlur={handleBlur}
           />
           {errors.name && <p className="form-error">{errors.name}</p>}
         </div>
@@ -102,6 +112,7 @@ export default function RegisterPage() {
             id="product-description"
             value={productData.description}
             onChange={handleInputChange}
+            onBlur={handleBlur}
           />
           {errors.description && <p className="form-error">{errors.description}</p>}
           </div>
@@ -116,6 +127,7 @@ export default function RegisterPage() {
             id="product-price"
             value={productData.price}
             onChange={handleInputChange}
+            onBlur={handleBlur}
           />
           {errors.price && <p className="form-error">{errors.price}</p>}
           </div>

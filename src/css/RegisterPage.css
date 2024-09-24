@@ -27,8 +27,15 @@
     width: 7.4rem;
     height: 4.2rem;
     border-radius: 0.8rem;
-    background-color: #9CA3AF;
+    border: none;
+    background-color: #3692FF;
     color: white;
+    cursor: pointer;
+}
+
+.registration-top-button:disabled {
+    background-color: #9CA3AF;
+    cursor: default;
 }
 
 .register-form {
