@@ -2,10 +2,11 @@ import arrow_left from '../assets/img/arrow_left.png';
 import arrow_right from '../assets/img/arrow_right.png';
 import '../css/Pagination.css';
 
-export default function Pagination({ page, setPage, totalCount }) {
+export default function Pagination({ page, setPage, totalCount, pageSize }) {
+  // 페이지 버튼을 5개씩 보여주기 위함
   const pageLimit = 5;
   const pageGroup = Math.ceil(page / pageLimit);
-  const totalPages = Math.ceil(totalCount / 10);
+  const totalPages = Math.ceil(totalCount / pageSize);
 
   const getVisiblePages = () => {
     const startPage = (pageGroup - 1) * pageLimit + 1;

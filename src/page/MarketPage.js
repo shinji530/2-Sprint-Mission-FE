@@ -11,6 +11,12 @@ import { Link } from "react-router-dom";
 
 const mobileSize = 743;
 const tabletSize = 1199;
+const MOBILE_PAGE_SIZE = 4;
+const MOBIE_BEST_ITEM_SIZE = 1;
+const TABLET_PAGE_SIZE = 6;
+const TABLET_BEST_ITEM_SIZE = 2;
+const DESKTOP_PAGE_SIZE = 10;
+const DESKTOP_BEST_ITEM_SIZE = 4;
 
 function MarketPage() {
   const [order, setOrder] = useState("favorite");
@@ -20,20 +26,20 @@ function MarketPage() {
   const [isToggle, setIsToggle] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
-  const [bestItemSize, setBestItemSize] = useState(4);
+  const [pageSize, setPageSize] = useState(DESKTOP_PAGE_SIZE);
+  const [bestItemSize, setBestItemSize] = useState(DESKTOP_BEST_ITEM_SIZE);
 
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth <= mobileSize) {
-        setPageSize(4);
-        setBestItemSize(1);
+        setPageSize(MOBILE_PAGE_SIZE);
+        setBestItemSize(MOBIE_BEST_ITEM_SIZE);
       } else if (window.innerWidth <= tabletSize) {
-        setPageSize(6);
-        setBestItemSize(2);
+        setPageSize(TABLET_PAGE_SIZE);
+        setBestItemSize(TABLET_BEST_ITEM_SIZE);
       } else {
-        setPageSize(10);
-        setBestItemSize(4);
+        setPageSize(DESKTOP_PAGE_SIZE);
+        setBestItemSize(DESKTOP_BEST_ITEM_SIZE);
       }
     };
 
@@ -56,8 +62,6 @@ function MarketPage() {
     fetchBestItems();
   }, [bestItemSize]);
 
-  const sortedProducts = products.sort((a, b) => a[order] - b[order]);
-
   const handleNewesClick = () => {
     setOrder("recent");
     setIsToggle(false);
@@ -73,7 +77,7 @@ function MarketPage() {
   const handleSearchKeyPress = (e) => {
     if (e.key === "Enter") {
       setCurrentPage(1);
-      handleGetProductList(order, 1);
+      handleGetProductList(order);
     }
   };
 
@@ -105,7 +109,7 @@ function MarketPage() {
   );
 
   useEffect(() => {
-    handleGetProductList(order, currentPage);
+    handleGetProductList(order);
   }, [order, search, currentPage, handleGetProductList]);
 
   return (
@@ -132,7 +136,7 @@ function MarketPage() {
               <Link to='/registration'><button className="item-register">상품 등록하기</button></Link>
               <div className="sort-menu">
                 <button className="sort-toggle" onClick={toggleSortMenu}>
-                  {pageSize === 4 ? (
+                  {pageSize === MOBILE_PAGE_SIZE ? (
                     <img src={ic_sort} alt="ic_sort"></img>
                   ) : (
                     <div className="sort-context">
@@ -159,7 +163,7 @@ function MarketPage() {
               </div>
             </div>
           </div>
-          <ItemList products={sortedProducts} className="ItemList" />
+          <ItemList products={products} className="ItemList" />
         </div>
       </div>
       <Pagination
@@ -167,6 +171,7 @@ function MarketPage() {
         page={currentPage}
         setPage={setCurrentPage}
         totalCount={totalCount}
+        pageSize={pageSize}
       />
     </Fragment>
   );
